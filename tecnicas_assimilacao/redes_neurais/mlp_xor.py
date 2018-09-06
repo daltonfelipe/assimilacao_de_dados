@@ -41,7 +41,7 @@ pesos1 = 2*np.random.random((nco, 1)) - 1 # camada oculta -> neuronio de saida
 # numero de iteracoes de treinamento 
 epocas = 50000
 
-taxa_aprendizagem = 0.6
+taxa_aprendizagem = 0.8
 momento = 1.0
 
 loop_time = np.empty(epocas)
@@ -90,5 +90,3 @@ print("\n======== Finalizado ========")
 print('\nEpocas: {}'.format(epocas))
 print('Tempo de execucao: ',end-init)
 print('Tempo Medio por epoca: ',loop_time.mean())
-
-
