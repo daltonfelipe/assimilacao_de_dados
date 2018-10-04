@@ -29,7 +29,7 @@ entradas = np.array([[0, 0],
 saidas = np.array([[0],[1],[1],[0]])
 
 # numero de neuronios camada oculta
-nco = 3
+nco = 1
 # numero de neuronios de entrada
 nce = len(entradas[0])
 # numero de neuronios de saida
@@ -39,7 +39,7 @@ pesos0 = 2*np.random.random((nce, nco)) - 1 # neuronios de entrada -> camada ocu
 pesos1 = 2*np.random.random((nco, 1)) - 1 # camada oculta -> neuronio de saida
 
 # numero de iteracoes de treinamento 
-epocas = 50000
+epocas = 5000
 
 taxa_aprendizagem = 0.8
 momento = 1.0

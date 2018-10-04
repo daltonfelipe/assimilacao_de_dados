@@ -8,8 +8,6 @@ Created on Wed Sep  5 17:28:29 2018
 import numpy as np
 import time
 import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
 
 # Variaveis
 # entradas = conjunto de dados de entrada
@@ -22,6 +20,7 @@ class NN_MLP():
                  taxa_aprendizagem=0.1,
                  momento=1,
                  tamanho_camada_oculta=100):
+        
         # numero de iteracoes de treinamento 
         self.epocas = epocas # padrao 1000
         # erro para segundo criterio de parada
@@ -33,18 +32,28 @@ class NN_MLP():
         self.nco = tamanho_camada_oculta # padrao 100
         
     # funcao de ativacao sigmoid
-    def sigmoid(self, soma):
-        return 1 / (1 + np.exp(-soma))
+    #def sigmoid(self, soma):
+    #    return 1 / (1 + np.exp(-soma))
     
     # usada no calculo do gradient descent
-    def sigmoid_derivada(self, sig):
-        return sig * (1 - sig)
+    #def sigmoid_derivada(self, sig):
+    #    return sig * (1 - sig)
+    
+    
+    def tanh(self, soma):
+        return np.tanh(soma)
+    
+    def tanh_derivada(self, tanh):
+        return 1 - np.tanh(tanh)**2
+    
     
     # funcao de treino e ajuste dos pesos
     def treinar(self,entradas,saidas):
         loop_time = []
         init = time.time()
         erro_ = []
+        self.entradas = entradas
+        self.saidas = saidas
         # numero de neuronios de entrada
         self.nce = len(entradas[0])
         # numero de neuronios de saida
@@ -65,11 +74,11 @@ class NN_MLP():
             # funcao soma entre entradas e pesos
             soma_sinapse0 = np.dot(camada_entrada, pesos0)
             # ativacao da rede (neu. ent -> cam. oculta) -> [func. sigmoid]
-            camada_oculta = self.sigmoid(soma_sinapse0)
-            # funcao so,a
+            camada_oculta = self.tanh(soma_sinapse0)
+            # funcao soma entre camada oculta e pesos saida
             soma_sinapse1 = np.dot(camada_oculta, pesos1)
             # ativacao da rede (neu. oculta -> neu. saida) -> [func. sigmoide]
-            camada_saida = self.sigmoid(soma_sinapse1)
+            camada_saida = self.tanh(soma_sinapse1)
             # calculo do erro entre saida verdadeira e treinada
             erro_camada_saida = saidas - camada_saida
             # calculo da media abslouta dos erros
@@ -77,11 +86,11 @@ class NN_MLP():
             erro_.append(media_absoluta)
             # BACKWARD (Backpropagation - ajuste dos pesos)
             # gradient descent (descida do gradiente - busca do melhor minimo local)
-            derivada_saida = self.sigmoid_derivada(camada_saida)
+            derivada_saida = self.tanh_derivada(camada_saida)
             delta_saida = erro_camada_saida*derivada_saida
-            pesos1_transposta = pesos1.T
-            delta_saida_peso = delta_saida.dot(pesos1_transposta)
-            delta_camada_oculta = delta_saida_peso*self.sigmoid_derivada(camada_oculta)
+            #pesos1_transposta = pesos1.T
+            delta_saida_peso = delta_saida.dot(pesos1.T)
+            delta_camada_oculta = delta_saida_peso*self.tanh_derivada(camada_oculta)
             camada_oculta_transposta = camada_oculta.T
             pesos_novos1 = camada_oculta_transposta.dot(delta_saida)
             # ajuste dos pesos que ligam camada oculta e neuronios de saida 
@@ -109,44 +118,17 @@ class NN_MLP():
         print('Tempo Medio por epoca: ',np.mean(loop_time))
         print("Erro: {}".format(self.erro_media_absoluta))
         plt.plot(erro_)
+        plt.grid(linestyle="-.")
+        plt.show()
     # faz a previsao com os pesos ajustados
     def previsao(self, entrada):
-        camada_entrada = np.array(entrada)
+        camada_entrada = entrada
         # funcao soma entre entradas e pesos
         soma_sinapse0 = np.dot(camada_entrada, self.pesos0)
         # ativacao da rede (neu. ent -> cam. oculta) -> [func. sigmoid]
-        camada_oculta = self.sigmoid(soma_sinapse0)
+        camada_oculta = self.tanh(soma_sinapse0)
         # funcao so,a
         soma_sinapse1 = np.dot(camada_oculta, self.pesos1)
         # ativacao da rede (neu. oculta -> neu. saida) -> [func. sigmoide]
-        camada_saida = self.sigmoid(soma_sinapse1)
-        # calculo do erro entre saida verdadeira e treinada
-        erro_camada_saida = saidas - camada_saida
-        # calculo da media abslouta dos erros
-        self.erro_media_absoluta_previsao = abs(erro_camada_saida.mean())
-        return camada_saida
-        
-
-# Teste
-# matriz de entrada
-entradas = np.array([[0, 0],
-                     [0, 1],
-                     [1, 0],
-                     [1, 1]])
-
-# matriz coluna de saida xor
-saidas = np.array([[1],[0],[0],[1]])
-
-# inicializacao da classe
-nn = NN_MLP(epocas=20000,
-            erro=1e-10,
-            taxa_aprendizagem=0.05,
-            tamanho_camada_oculta=10, 
-            momento=1)
-
-# treino da rede
-nn.treinar(entradas, saidas)
-
-# previsao  
-print("\nPrevisao: ")
-print(nn.previsao(entradas))
+        prev = self.tanh(soma_sinapse1)
+        return prev
