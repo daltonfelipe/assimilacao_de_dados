@@ -1,62 +1,61 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Fri Sep 28 11:29:24 2018
-
-@author: dalton
-"""
-
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
 Created on Fri Aug 31 13:43:24 2018
-
 @author: dalton
 """
 import numpy as np
 from runge_kutta4 import lorenz_RK4
 import matplotlib.pyplot as plt
+import json
+
+with open("confs.json","r") as file:
+    confs = json.load(file)
+
+# num max de iteracoes e tempo de passo runge-kutta
+fmax = confs["model_params"]["fmax"]
+h = confs["model_params"]["h"]
 
 #=====================================================
-#### Set de confugurações iniciais
+#  Solução Real
 #=====================================================
-# parametros para inicialização da solução real
-s, r, b = 10, 28, 8/3       # rho, sigma, beta
-fmax, h = 1000, 0.01        # num max deiteracoes e tempo de passo runge-kutta
 
-#=====================================================
-####  Solução Real
-#=====================================================
-x0, y0, z0 = -5.4458, -5.4841, 22.5606          # condicoes iniciais
+x0 = confs["model_params"]["initial_cond"]['x0']
+y0 = confs["model_params"]["initial_cond"]['y0']
+z0 = confs["model_params"]["initial_cond"]['z0']
+
+s = confs["model_params"]["sigma"]
+b = confs["model_params"]["beta"]
+r = confs["model_params"]["rho"]
 
 x, y, z, t = lorenz_RK4(x0, y0, z0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
 #=====================================================
-####  Solução Background
+#  Solução Background
 #=====================================================
 xb0, yb0, zb0 = -5.9, -5.0, 24.0         # condicoes iniciais solução
 xb, yb, zb, tb = lorenz_RK4(xb0, yb0, zb0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
-# ====================================================
-#### Observações
-# ====================================================
+#====================================================
+#  Observações
+#====================================================
 
-ob_f = int(input("Frequência das observações: ")) # frequência das observações
-tmax = int(fmax*0.6 + ob_f) # tempo de assimilação
+ob_f = confs["io_params"]["ob_f"]
+tmax = confs["io_params"]["tmax"]
 
 xob = np.zeros((tmax,1))
 yob = np.zeros((tmax,1))
 zob = np.zeros((tmax,1))
 
-nobs = int(tmax/ob_f)    # numero de observações 
+nobs = int(tmax/ob_f)   # numero de observações 
 vec = np.arange(1, tmax-nobs, ob_f-1)
 
 sc_x_noise = np.random.randn(int(nobs),1)
 sc_y_noise = np.random.randn(int(nobs),1)
 sc_z_noise = np.random.randn(int(nobs),1)
 
-sd = float(input("Variancia do erro de observação: "))  # variância do erro de observação 
-var = np.sqrt(sd)
+sd = confs["io_params"].get("sd")
+var = confs["io_params"].get("var")
 
 # matriz de covariancia dos erros
 Rx = var*sc_x_noise
@@ -73,61 +72,12 @@ for i in vec - 1:
 
 v = 0.01*vec
 
-# ====================================================
-# Matriz erro covariancia
-# ====================================================
-
-Bx = np.zeros((3, 3))
-Bxi = np.zeros((3, 3, tmax))
-R = np.zeros((3, 3))
-Ri = np.zeros((3, 3, tmax))
-
-# matriz erro de covariancia das observacoes R
-
-for i in vec - 1:
-    Ri[0, 0, i] = ((x[i] - xob[i]).T).dot(x[i] - xob[i])
-    Ri[0, 1, i] = ((x[i] - xob[i]).T).dot(y[i] - yob[i])
-    Ri[0, 2, i] = ((x[i] - xob[i]).T).dot(z[i] - zob[i])
-    Ri[1, 0, i] = ((y[i] - yob[i]).T).dot(x[i] - xob[i])
-    Ri[1, 1, i] = ((y[i] - yob[i]).T).dot(y[i] - yob[i])
-    Ri[1, 2, i] = ((y[i] - yob[i]).T).dot(z[i] - zob[i])
-    Ri[2, 0, i] = ((z[i] - zob[i]).T).dot(x[i] - xob[i])
-    Ri[2, 1, i] = ((z[i] - zob[i]).T).dot(y[i] - yob[i])
-    Ri[2, 2, i] = ((z[i] - zob[i]).T).dot(z[i] - zob[i])
-
-Rj = np.zeros((3, 3, nobs))
-
-for j in range(3):
-    for k in range(3):
-        Rj[j, k, :] = Ri[j, k, vec-1]
-        R[j, k] = (1/nobs)*R[j, k].sum()
-
-# matriz erro de covariancia da solucao background
-B = np.zeros((3,3))
-
-for i in range(tmax):
-    Bxi[0, 0, i] = ((x[i] - xb[i]).T)*(x[i] - xb[i])
-    Bxi[0, 1, i] = ((x[i] - xb[i]).T)*(y[i] - yb[i])
-    Bxi[0, 2, i] = ((x[i] - xb[i]).T)*(z[i] - zb[i])
-    Bxi[1, 0, i] = ((y[i] - yb[i]).T)*(x[i] - xb[i])
-    Bxi[1, 1, i] = ((y[i] - yb[i]).T)*(y[i] - yb[i])
-    Bxi[1, 2, i] = ((y[i] - yb[i]).T)*(z[i] - zb[i])
-    Bxi[2, 0, i] = ((z[i] - zb[i]).T)*(x[i] - xb[i])
-    Bxi[2, 1, i] = ((z[i] - zb[i]).T)*(y[i] - yb[i])
-    Bxi[2, 2, i] = ((z[i] - zb[i]).T)*(z[i] - zb[i])
-
-for j in range(3):
-    for k in range(3):
-        Bx[j, k] = (1/tmax)*Bxi[j, k, :].sum()
-
 x_ob = np.zeros((3,fmax))
 x_oi = np.copy(x_ob)
-Wx = np.zeros((3,3))
 
 xfc, yfc, zfc = np.zeros(fmax), np.zeros(fmax), np.zeros(fmax)
 xfc[0], yfc[0], zfc[0] = xb[0], yb[0], zb[0]
 
-Wx = Bx.dot(np.linalg.pinv(Bx+R))
 
 x_ob[0, :len(xob)] = xob.T
 x_ob[1, :len(yob)] = yob.T
@@ -168,7 +118,6 @@ for i in range(fmax - 1):
 
     if np.all(x_ob[:,i+1] != 0):
         x_oi[:,i+1] = [xfc[i+1], yfc[i+1], zfc[i+1]]
-        x_oi[:,i+1] = x_oi[:,i+1] + Wx.dot(x_ob[:,i+1] - x_oi[:,i+1])  
     else:
         x_oi[:,i+1] = [xfc[i+1], yfc[i+1], zfc[i+1]]
 
@@ -260,9 +209,11 @@ plt.legend(loc="best")
 plt.grid(linestyle="-.")
 plt.show()
 
-
 # salva os dados para treino da rede
 x.tofile("data/x_model1.dat","\n")
 xob.tofile("data/x_ob1.dat","\n")
 x_oi[0].tofile("data/x_oi1.dat","\n")
 #Rx.tofile("data/rx_ob.dat","\n")
+
+
+

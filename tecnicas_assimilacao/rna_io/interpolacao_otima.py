@@ -8,33 +8,52 @@ Created on Fri Aug 31 13:43:24 2018
 import numpy as np
 from runge_kutta4 import lorenz_RK4
 import matplotlib.pyplot as plt
-
+import json
 #=====================================================
 #### Set de confugurações iniciais
 #=====================================================
 # parametros para inicialização da solução real
+
+confs = {}
+
 s, r, b = 10, 28, 8/3       # rho, sigma, beta
-fmax, h = 1000, 0.01        # num max deiteracoes e tempo de passo runge-kutta
+fmax, h = 1000, 0.01        # num max de iteracoes e tempo de passo runge-kutta
+
+confs['model_params'] = {}
+confs["model_params"]["beta"] = b
+confs["model_params"]["rho"] = r
+confs["model_params"]["sigma"] = s
+confs["model_params"]["fmax"] = fmax
+confs["model_params"]["h"] = h 
 
 #=====================================================
-####  Solução Real
+#  Solução Real
 #=====================================================
 x0, y0, z0 = -5.4458, -5.4841, 22.5606          # condicoes iniciais
+
+confs["model_params"]["initial_cond"] = {}
+confs["model_params"]["initial_cond"]['x0'] = x0
+confs["model_params"]["initial_cond"]['y0'] = y0
+confs["model_params"]["initial_cond"]['z0'] = z0
 
 x, y, z, t = lorenz_RK4(x0, y0, z0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
 #=====================================================
-####  Solução Background
+#  Solução Background
 #=====================================================
 xb0, yb0, zb0 = -5.9, -5.0, 24.0         # condicoes iniciais solução
 xb, yb, zb, tb = lorenz_RK4(xb0, yb0, zb0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
-# ====================================================
-#### Observações
-# ====================================================
+#====================================================
+#  Observações
+#====================================================
 
 ob_f = int(input("Frequência das observações: ")) # frequência das observações
-tmax = int(fmax*0.6 + ob_f) # tempo de assimilação
+tmax = 600 + ob_f # tempo de assimilação
+
+confs["io_params"] = {}
+confs["io_params"]["ob_f"] = ob_f
+confs["io_params"]["tmax"] = tmax
 
 xob = np.zeros((tmax,1))
 yob = np.zeros((tmax,1))
@@ -49,6 +68,8 @@ sc_z_noise = np.random.randn(int(nobs),1)
 
 sd = float(input("Variancia do erro de observação: "))  # variância do erro de observação 
 var = np.sqrt(sd)
+
+confs["io_params"]["var"] = sd 
 
 # matriz de covariancia dos erros
 Rx = var*sc_x_noise
@@ -65,9 +86,9 @@ for i in vec - 1:
 
 v = 0.01*vec
 
-# ====================================================
-# Matriz erro covariancia
-# ====================================================
+#====================================================
+#  Matriz erro covariancia
+#====================================================
 
 Bx = np.zeros((3, 3))
 Bxi = np.zeros((3, 3, tmax))
@@ -170,6 +191,9 @@ y_err = np.abs(y.T - x_oi[1,:])
 z_err = np.abs(z.T - x_oi[2,:])
 
 
+with open("confs.json","w") as conf_file:
+    conf_file.write(json.dumps(confs, indent=2))
+
 print("Concluido!")
 print("""
     Método Interpolação Ótima
@@ -252,9 +276,11 @@ plt.legend(loc="best")
 plt.grid(linestyle="-.")
 plt.show()
 
-
 # salva os dados para treino da rede
 x.tofile("data/x_model1.dat","\n")
 xob.tofile("data/x_ob1.dat","\n")
 x_oi[0].tofile("data/x_oi1.dat","\n")
 #Rx.tofile("data/rx_ob.dat","\n")
+
+
+

@@ -120,6 +120,7 @@ class NN_MLP():
         plt.plot(erro_)
         plt.grid(linestyle="-.")
         plt.show()
+        
     # faz a previsao com os pesos ajustados
     def previsao(self, entrada):
         camada_entrada = entrada

@@ -27,7 +27,7 @@ confs["model_params"]["fmax"] = fmax
 confs["model_params"]["h"] = h 
 
 #=====================================================
-####  Solução Real
+#  Solução Real
 #=====================================================
 x0, y0, z0 = -5.4458, -5.4841, 22.5606          # condicoes iniciais
 
@@ -39,14 +39,14 @@ confs["model_params"]["initial_cond"]['z0'] = z0
 x, y, z, t = lorenz_RK4(x0, y0, z0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
 #=====================================================
-####  Solução Background
+#  Solução Background
 #=====================================================
 xb0, yb0, zb0 = -5.9, -5.0, 24.0         # condicoes iniciais solução
 xb, yb, zb, tb = lorenz_RK4(xb0, yb0, zb0, r, s, b, fmax, h) # metodo de runge-kuta 4a ordem
 
-# ====================================================
-#### Observações
-# ====================================================
+#====================================================
+#  Observações
+#====================================================
 
 ob_f = int(input("Frequência das observações: ")) # frequência das observações
 tmax = 600 + ob_f # tempo de assimilação
@@ -86,9 +86,9 @@ for i in vec - 1:
 
 v = 0.01*vec
 
-# ====================================================
-# Matriz erro covariancia
-# ====================================================
+#====================================================
+#  Matriz erro covariancia
+#====================================================
 
 Bx = np.zeros((3, 3))
 Bxi = np.zeros((3, 3, tmax))
@@ -193,7 +193,6 @@ z_err = np.abs(z.T - x_oi[2,:])
 
 with open("confs.json","w") as conf_file:
     conf_file.write(json.dumps(confs, indent=2))
-    conf_file.close()
 
 print("Concluido!")
 print("""

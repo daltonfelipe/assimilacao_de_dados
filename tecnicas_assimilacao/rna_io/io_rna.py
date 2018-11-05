@@ -5,12 +5,15 @@ Created on Thu Sep 20 19:47:48 2018
 @author: dalton
 """
 import numpy as np
+import pandas as pd
 from mlp import NN_MLP 
 import matplotlib.pyplot as plt
 
 # carregamento dos dados
+# entradas
 x_model = np.loadtxt('data/x_model1.dat')
 x_ob = np.loadtxt('data/x_ob1.dat')
+# saidas
 x_io = np.loadtxt('data/x_oi1.dat')
 #
 ## matriz de entrada
@@ -23,7 +26,6 @@ for i in range(x_ob.size):
 
 features_test = np.array([x_model, x_ob_test]).T
 
-#
 ## matriz de saida
 target = np.zeros((25, 1))
 #
@@ -46,6 +48,12 @@ features_test /= scaler
 #
 nn.treinar(features, target)
 
+pesos = np.column_stack([nn.pesos0.T,nn.pesos1])
+
+df = pd.DataFrame(data=pesos, columns="pesos(entrada1),pesos(entrada2),pesos(saida)".split(","))
+
+df.to_csv("data/x_pesos.dat", index=False)
+
 prev = nn.previsao(features)
 
 plt.plot(target*scaler, label="Saida desejada (I.O)")
@@ -56,3 +64,4 @@ plt.legend(loc="best")
 plt.grid(linestyle="-.")
 
 plt.show()
+
