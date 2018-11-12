@@ -9,6 +9,8 @@ import pandas as pd
 from mlp import NN_MLP 
 import matplotlib.pyplot as plt
 
+confs = {}
+
 # carregamento dos dados
 # entradas
 x_model = np.loadtxt('data/x_model1.dat')
@@ -45,17 +47,19 @@ scaler = np.linalg.norm(target)
 target /= scaler
 features /= scaler
 features_test /= scaler
-#
+
+confs['scaler'] = scaler 
+
 nn.treinar(features, target)
 
 pesos = np.column_stack([nn.pesos0.T,nn.pesos1])
 
-df = pd.DataFrame(data=pesos, columns="pesos(entrada1),pesos(entrada2),pesos(saida)".split(","))
+df = pd.DataFrame(data=pesos, columns="pesos0a,pesos0b,pesos1".split(","))
 
-df.to_csv("data/x_pesos.dat", index=False)
+df.to_csv("data/x_pesos.csv", index=False)
 
 prev = nn.previsao(features)
-
+plt.figure(1)
 plt.plot(target*scaler, label="Saida desejada (I.O)")
 #plt.plot(x_model, label="Integracao do Modelo (RK4)")
 plt.plot(prev*scaler,'--' ,label="Previsao da Rede")
@@ -65,3 +69,6 @@ plt.grid(linestyle="-.")
 
 plt.show()
 
+
+with open("rna_confs.json","w") as conf_file:
+    conf_file.write(json.dumps(confs, indent=2))

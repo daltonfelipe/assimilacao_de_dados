@@ -4,13 +4,26 @@
 Created on Fri Aug 31 13:43:24 2018
 @author: dalton
 """
+import pandas as pd
 import numpy as np
 from runge_kutta4 import lorenz_RK4
 import matplotlib.pyplot as plt
 import json
+from mlp import NN_MLP
+
+nn = NN_MLP()
 
 with open("confs.json","r") as file:
     confs = json.load(file)
+
+with open("rna_confs.json","r") as file:
+    rna_confs = json.load(file)
+
+# carrega os pesos treinados
+pesos = pd.read_csv("data/x_pesos.csv")
+
+pesos0 = np.column_stack((pesos['pesos0a'], pesos['pesos0b']))
+pesos1 = np.array(pesos['pesos1'])
 
 # num max de iteracoes e tempo de passo runge-kutta
 fmax = confs["model_params"]["fmax"]
@@ -20,6 +33,7 @@ h = confs["model_params"]["h"]
 #  Solução Real
 #=====================================================
 
+# pega os valores utilizados no io salvos em arquivo
 x0 = confs["model_params"]["initial_cond"]['x0']
 y0 = confs["model_params"]["initial_cond"]['y0']
 z0 = confs["model_params"]["initial_cond"]['z0']
@@ -85,8 +99,17 @@ x_ob[2, :len(zob)] = zob.T
 
 x_oi[:,0] = [xb[0], yb[0], zb[0]]
 
+c = 0
+xob = x_ob[0]
+# variavel de entrada para previsao da rede neural
+features = np.array([x, xob]).T
+
+# reduz a dimensao dos valores com o modulo do vetor saida
+scaler = rna_confs["scaler"]
+features /= scaler
+
 for i in range(fmax - 1):
-    
+    c += 1
     if i >= tmax:
         x_ob[0, i+1] = 0
         x_ob[1, i+1] = 0
@@ -111,6 +134,10 @@ for i in range(fmax - 1):
     k4xfc = h * (s * (yfc[i] + k3yfc) - s * (xfc[i] + k3xfc))
     k4yfc = h * (r * (xfc[i] + k3xfc) - (yfc[i] + k3yfc) - (xfc[i] + k3xfc) * (zfc[i] + k3zfc))
     k4zfc = h * ((xfc[i] + k3xfc) * (yfc[i] + k3yfc) - b * (zfc[i] + k3zfc))
+    
+    if i%25 == 0:
+        xfc[i-1] = nn.ext_previsao(features[0], pesos0, pesos1)
+        
     
     xfc[i+1] = (xfc[i] + (1 / 6.0) * (k1xfc + 2.0 * k2xfc + 2.0 * k3xfc + k4xfc))
     yfc[i+1] = (yfc[i] + (1 / 6.0) * (k1yfc + 2.0 * k2yfc + 2.0 * k3yfc + k4yfc))

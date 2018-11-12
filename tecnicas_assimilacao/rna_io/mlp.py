@@ -117,6 +117,7 @@ class NN_MLP():
         print('Tempo de execucao: ',end-init)
         print('Tempo Medio por epoca: ',np.mean(loop_time))
         print("Erro: {}".format(self.erro_media_absoluta))
+        plt.figure(0)
         plt.plot(erro_)
         plt.grid(linestyle="-.")
         plt.show()
@@ -133,3 +134,19 @@ class NN_MLP():
         # ativacao da rede (neu. oculta -> neu. saida) -> [func. sigmoide]
         prev = self.tanh(soma_sinapse1)
         return prev
+    
+    # faz a previsao com valores de pesos externos
+    def ext_previsao(self, entrada, pesos0, pesos1):
+        camada_entrada = entrada
+        # funcao soma entre entradas e pesos
+        soma_sinapse0 = np.dot(camada_entrada, pesos0)
+        # ativacao da rede (neu. ent -> cam. oculta) -> [func. sigmoid]
+        camada_oculta = self.tanh(soma_sinapse0)
+        # funcao so,a
+        soma_sinapse1 = np.dot(camada_oculta, pesos1)
+        # ativacao da rede (neu. oculta -> neu. saida) -> [func. sigmoide]
+        prev = self.tanh(soma_sinapse1)
+        return prev
+
+    
+    

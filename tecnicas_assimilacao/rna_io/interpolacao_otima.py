@@ -240,6 +240,7 @@ plt.grid(linestyle="-.")
 plt.legend(loc="upper left") #bbox_to_anchor=(0.8025, 1.75), shadow=True, ncol=2
 plt.ylabel("Solução para x")
 
+
 # solucao de z
 plt.subplot(2, 1, 2)
 # solução real
@@ -255,7 +256,7 @@ plt.grid(linestyle="-.")
 plt.legend(loc="lower left") # bbox_to_anchor=(0.8025, -0.4), shadow=True, ncol=2
 plt.ylabel("Solução para z")
 plt.xlabel("Tempo")
-
+plt.savefig("data/xz_solution.png")
 # ERROS
 plt.figure("Fig2: Interpolação Ótima (Erros)")
 
@@ -274,13 +275,14 @@ plt.ylabel("Erro de z")
 plt.xlabel("Tempo")
 plt.legend(loc="best")
 plt.grid(linestyle="-.")
+plt.savefig("data/xz_err.png")
 plt.show()
 
 # salva os dados para treino da rede
 x.tofile("data/x_model1.dat","\n")
 xob.tofile("data/x_ob1.dat","\n")
 x_oi[0].tofile("data/x_oi1.dat","\n")
-#Rx.tofile("data/rx_ob.dat","\n")
+
 
 
 
