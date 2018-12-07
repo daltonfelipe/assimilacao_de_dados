@@ -10,12 +10,20 @@ A teoria do caos afirma que, em um determinado Problema de Valor Inicial (PVI), 
 É uma técnica numérica utilizada para determinar ótimas condições iniciais, combinando valores de um modelo matemático com valores de observações, tendo assim dados de análise que aproximam-se, dado determinado erro, dos dados do modelo "correto". Admitindo a natureza caótica da maioria dos modelos matemáticos que representam os fenômenos que nos cercam, é imprescindível a sua utilização para a minimização dos erros e uma melhor previsão de futuros comportamentos de tais modelos. Ou seja, a partir da adição de observações em uma determinada frequência a um modelo com valores ligeiramente pertubados (background) em relação ao modelo que se assume como correto (solução real), ocorre a correção do modelo background o aproximando, com o menor erro possivel, da solução real. Correções sucessivas e Interpolação Ótima são exemplos de técnicas de assimilação de dados.
 
 # Progresso da pesquisa
-* Estudo de métodos de assimilação de dados;
+* Fase de estudo:
+    - Sistemas dinâmicos e caóticos;
+    - Sistemas de Lorenz;
+    - Equações Diferenciais ordinárias;
+    - Séries temporais;
+    - Solução do sistema de equações;
+    - Métodos de solução;
+        - Runge-Kutta de 4rta ordem;
+* Estudo de métodos de assimilação de dados:
     - Correções Sucessivas (CS);
     - Interpolação Ótima (IO);
 * Implementação dos métodos acima em Python3;
 * Comparação dos resultados dos métodos;
-* Estudo sobre Redes Neurais Artificiais (RNA);
+* Estudo sobre Redes Neurais Artificiais (RNA):
     - Redes Neurais Perceptron Simples;
     - Redes Neurais Perceptron Multicamadas (MLP);
 * Implementação de uma Rede Neural Percepron Simples;
