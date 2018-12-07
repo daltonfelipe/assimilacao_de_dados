@@ -1,6 +1,6 @@
 # Menu
-* [Sobre](#Sobre)
-* [Referencial Teórico](#referencial-teorico)
+* [Sobre](#sobre)
+* [Referencial Teórico](#referencial-teórico)
 * [Pesquisa](#progresso-da-pesquisa)
 
 # Sobre
