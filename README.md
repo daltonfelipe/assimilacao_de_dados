@@ -11,13 +11,13 @@ A teoria do caos afirma que, em um determinado Problema de Valor Inicial (PVI), 
 
 # Progresso da pesquisa
 * Estudo de métodos de assimilação de dados
- - Correções Sucessivas
- - Interpolação Ótima 
+    - Correções Sucessivas
+    - Interpolação Ótima 
 * Implementação dos métodos de assimilação de dados em Python3
 * Comparação dos resultados dos métodos
 * Estudo sobre Redes Neurais Artificiais
- - Redes Neurais Perceptron Simples
- - Redes Neurais Perceptron Multicamadas
+    - Redes Neurais Perceptron Simples
+    - Redes Neurais Perceptron Multicamadas
 * Implementação de uma rede Neural Percepron Simples
 * Implementação de uma Rede Neural Perceptron Multicamada
 * Treinamento da Rede Neural com dados da assimilação
