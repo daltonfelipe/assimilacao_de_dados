@@ -1,7 +1,7 @@
 # Menu
 * [Sobre](#sobre)
 * [Referencial Teórico](#referencial-teórico)
-* [Pesquisa](#progresso-da-pesquisa)
+* [Progresso da pesquisa](#progresso-da-pesquisa)
 
 # Sobre
 Repositório referente aos códigos do Trabalho de iniciação científica cujo objetivo é aplicar métodos de assimilação de dados ao sistema dinâmico de lorenz.
