@@ -35,5 +35,5 @@ A teoria do caos afirma que, em um determinado Problema de Valor Inicial (PVI), 
 * Implementação de uma Rede Neural Percepron Simples;
 * Implementação de uma Rede Neural Perceptron Multicamada;
     - Teste da Rede Neural MLP com a base de dados XOR;
+* Assimilaço com o método Interpolação Ótima
 * Treinamento da Rede Neural com dados da assimilação;
-
